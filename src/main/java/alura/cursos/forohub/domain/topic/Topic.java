@@ -39,4 +39,24 @@ public class Topic {
         this.course_id = dtoTopic.course_id();
     }
 
+    public void update(DTOUpdateTopic dtoUpdateTopic) {
+        if (dtoUpdateTopic.title() != null) {
+            this.title = dtoUpdateTopic.title();
+        }
+        if (dtoUpdateTopic.message() != null) {
+            this.message = dtoUpdateTopic.message();
+        }
+        if (dtoUpdateTopic.status() != null) {
+            this.status = dtoUpdateTopic.status();
+        } else if (dtoUpdateTopic.status() == null) {
+            this.status = Status.valueOf("ACTUALIZADO");
+        }
+        if (dtoUpdateTopic.tag() != null) {
+            this.tag = dtoUpdateTopic.tag();
+        }
+    }
+
+    public void delete() {
+        this.status = Status.valueOf("ELIMINADO");
+    }
 }

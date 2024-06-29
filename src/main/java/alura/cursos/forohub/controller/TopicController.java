@@ -3,10 +3,7 @@ package alura.cursos.forohub.controller;
 import alura.cursos.forohub.domain.answer.Answer;
 import alura.cursos.forohub.domain.answer.AnswerRepository;
 import alura.cursos.forohub.domain.answer.DTOAnswer;
-import alura.cursos.forohub.domain.topic.DTOGetTopics;
-import alura.cursos.forohub.domain.topic.DTOTopic;
-import alura.cursos.forohub.domain.topic.Topic;
-import alura.cursos.forohub.domain.topic.TopicRepository;
+import alura.cursos.forohub.domain.topic.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +38,39 @@ public class TopicController {
     @GetMapping
     public ResponseEntity<Page<DTOGetTopics>> listTopics(@PageableDefault(size = 10) Pageable pagination) {
         return ResponseEntity.ok(topicRepository.findAll(pagination).map(DTOGetTopics::new));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DTOGetTopics> listTopic(@PathVariable Long id) {
+        Topic topic = topicRepository.getReferenceById(id);
+        var topicData = new DTOGetTopics(topic.getTitle(),
+                topic.getMessage(),
+                topic.getCreated(),
+                topic.getStatus(),
+                topic.getUser_id(),
+                topic.getCourse_id());
+        return ResponseEntity.ok(topicData);
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity updateTopic(@RequestBody @Valid DTOUpdateTopic dtoUpdateTopic) {
+        Topic topic = topicRepository.getReferenceById(dtoUpdateTopic.id());
+        topic.update(dtoUpdateTopic);
+        var topicData = new DTOGetTopics(topic.getTitle(),
+                topic.getMessage(),
+                topic.getCreated(),
+                topic.getStatus(),
+                topic.getUser_id(),
+                topic.getCourse_id());
+        return ResponseEntity.ok(topicData);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity deleteTopic(@PathVariable Long id) {
+        Topic topic = topicRepository.getReferenceById(id);
+        topic.delete();
+        return ResponseEntity.noContent().build();
     }
 }
